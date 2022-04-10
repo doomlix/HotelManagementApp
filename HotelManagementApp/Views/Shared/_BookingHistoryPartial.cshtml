@@ -1,0 +1,88 @@
+﻿@model IEnumerable<HotelManagementApp.ViewModel.RoomBookingViewModel>
+
+<table style="width:100%">
+    <thead>
+        <tr>
+            <th>
+                First Name
+            </th>
+            <th>
+                Last Name
+            </th>
+            <th>
+                Phone Number
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+                Address
+            </th>
+            <th>
+                Booking From
+            </th>
+            <th>
+                Booking Until
+            </th>
+            <th>
+                Room
+            </th>
+            <th>
+                Number of Members
+            </th>
+            <th>
+                Number of Days
+            </th>
+            <th>
+                Room Price
+            </th>
+            <th>
+                Total Amount
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var item in Model)
+            {
+        <tr>
+            <td>
+                @item.CustomerFirstName
+            </td>
+            <td>
+                @item.CustomerLastName
+            </td>
+            <td>
+                @item.CustomerPhoneNumber
+            </td>
+            <td>
+                @item.CustomerEmail
+            </td>
+            <td>
+                @item.CustomerAddress
+            </td>
+            <td>
+                @item.BookingFrom.ToString(format: "dd-MMM-yyyy")
+            </td>
+            <td>
+                @item.BookingUntil.ToString(format: "dd-MMM-yyyy")
+            </td>
+            <td>
+                @item.RoomNumber
+            </td>
+            <td>
+                @item.NumberOfMembers
+            </td>
+            <td>
+                @item.NumberOfDays
+            </td>
+            <td>
+                @item.RoomPrice.ToString(format: "#,##0.00")
+            </td>
+            <td>
+                @item.TotalAmount.ToString(format: "#,##0.00")
+            </td>
+
+        </tr>
+        }
+    </tbody>
+</table>

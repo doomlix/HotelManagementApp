@@ -1,0 +1,192 @@
+﻿@model HotelManagementApp.ViewModel.BookingViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />
+<script src="~/Scripts/jquery-ui-1.13.1.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        DateTimePicker();
+        $("#btnSave").click(function () {
+            if (!$("#formCustomerBooking").valid()) {
+                return;
+            }
+            AddCustomerBooking();
+        });
+        LoadBookingHistory()
+
+    });
+
+    function DateTimePicker() {
+        $('.datepicker').datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: 'button',
+            sideBySide: true,
+            controlType: 'select',
+            buttonText: '<span class="glyphicon glyphicon-calendar"></span>',
+            minDate: new Date()
+
+        });
+        $("#txtBookingFrom").change(function () {
+            var date2 = $("#txtBookingFrom").datepicker('getDate', '+id');
+            date2.setDate(date2.getDate() + 1);
+            $("#txtBookingUntil").val().datepicker('option', 'minDate', date2);
+            $("#txtBookingUntil").datepicker('setDate', date2);
+        });
+    }
+
+    function LoadBookingHistory() {
+        $.ajax({
+            async: true,
+            type: 'GET',
+            dataType: 'HTML',
+            contentType: false,
+            processType: false,
+            url: '/Booking/GetAllBookingHistory',
+            success: function (data) {
+                $("#divBookingHistory").html(data);
+            },
+            error: function () {
+                alert('There is a problem in processing your request.');
+            }
+
+        });
+    }
+
+    function ResetBooking() {
+        $("#txtCustomerFirstName").val('');
+        $("#txtCustomerLastName").val('');
+        $("#txtCustomerPhoneNumber").val('');
+        $("#txtCustomerEmail").val('');
+        $("#txtCustomerAddress").val('');
+        $("#ddAssignRoom").val(1);
+        $("#txtNumberOfMembers").val('');
+        $("#txtCustomerFirstName").focus();
+    }
+
+
+
+    function AddCustomerBooking() {
+        var objBookingViewModel = {};
+        objBookingViewModel.CustomerFirstName = $("#txtCustomerFirstName").val();
+        objBookingViewModel.CustomerLastName = $("#txtCustomerLastName").val();
+        objBookingViewModel.CustomerPhoneNumber = $("#txtCustomerPhoneNumber").val();   
+        objBookingViewModel.CustomerEmail = $("#txtCustomerEmail").val();
+        objBookingViewModel.CustomerAddress = $("#txtCustomerAddress").val();
+        objBookingViewModel.BookingFrom = $("#txtBookingFrom").val();
+        objBookingViewModel.BookingUntil = $("#txtBookingUntil").val();
+        objBookingViewModel.AssignRoomId = $("#ddAssignRoom").val();
+        objBookingViewModel.NumberOfMembers = $("#txtNumberOfMembers").val();
+
+        $ajax({
+            async: true,
+            type: 'POST',
+            dataType: 'JSON',
+            contentType: 'application/json; charset=utf-8',
+            url: '/Booking/Index',
+            data: JSON.stringify(objBookingViewModel),
+            success: function (data) {
+                if (data.success===true) {
+                    alert(data.message);
+                    ResetBooking();
+                    AddCustomerBooking();
+                }
+            },
+            error: function () {
+                alert('There is a problem in processing your request');
+            }
+
+        })
+
+    }
+</script>
+
+<div style="margin-top: 50px">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#divNewBooking" data-backdrop="static" data-keyboard="false">New Booking</button>
+</div>
+
+<div id="divNewBooking" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">New Booking</h4>
+            </div>
+            <div class="modal-body">
+                <form id="formCustomerBooking">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="form-group col-lg-6">
+                                @Html.LabelFor(expression: model => model.CustomerFirstName, htmlAttributes: new { @class = "control-label" })
+                                @Html.TextBoxFor(expression: model => model.CustomerFirstName, htmlAttributes: new { @class = "form-control", @id = "txtCustomerFirstName" })
+                                @Html.ValidationMessageFor(expression: model => model.CustomerFirstName, validationMessage: null, htmlAttributes: new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group col-lg-6">
+                                @Html.LabelFor(expression: model => model.CustomerLastName, htmlAttributes: new { @class = "control-label" })
+                                @Html.TextBoxFor(expression: model => model.CustomerLastName, htmlAttributes: new { @class = "form-control", @id = "txtCustomerLastName" })
+                                @Html.ValidationMessageFor(expression: model => model.CustomerLastName, validationMessage: null, htmlAttributes: new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group col-lg-6">
+                                @Html.LabelFor(expression: model => model.CustomerPhoneNumber, htmlAttributes: new { @class = "control-label" })
+                                @Html.TextBoxFor(expression: model => model.CustomerPhoneNumber, htmlAttributes: new { @class = "form-control", @id = "txtCustomerPhoneNumber" })
+                                @Html.ValidationMessageFor(expression: model => model.CustomerPhoneNumber, validationMessage: null, htmlAttributes: new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="row">
+
+                            <div class="form-group col-lg-6">
+                                @Html.LabelFor(expression: model => model.CustomerEmail, htmlAttributes: new { @class = "control-label" })
+                                @Html.TextBoxFor(expression: model => model.CustomerEmail, htmlAttributes: new { @class = "form-control", @id = "txtCustomerEmail" })
+                                @Html.ValidationMessageFor(expression: model => model.CustomerEmail, validationMessage: null, htmlAttributes: new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group col-lg-6">
+                                @Html.LabelFor(expression: model => model.CustomerAddress, htmlAttributes: new { @class = "control-label" })
+                                @Html.TextBoxFor(expression: model => model.CustomerAddress, htmlAttributes: new { @class = "form-control", @id = "txtCustomerAddress" })
+                                @Html.ValidationMessageFor(expression: model => model.CustomerAddress, validationMessage: null, htmlAttributes: new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group col-lg-6">
+                                @Html.LabelFor(expression: model => model.BookingFrom, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(expression: model => model.BookingFrom, additionalViewData: new { htmlAttributes = new { @readonly = "true", Value = Model.BookingFrom.ToString(format: "dd-MMM-yyyy"), @class = "form-control datepicker", @id = "txtBookingFrom" } })
+                                @Html.ValidationMessageFor(expression: model => model.BookingFrom, validationMessage: null, htmlAttributes: new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="row">
+
+                            <div class="form-group col-lg-6">
+                                @Html.LabelFor(expression: model => model.BookingUntil, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(expression: model => model.BookingUntil, additionalViewData: new { htmlAttributes = new { @readonly = "true", Value = Model.BookingUntil.ToString(format: "dd-MMM-yyyy"), @class = "form-control datepicker", @id = "txtBookingUntil" } })
+                                @Html.ValidationMessageFor(expression: model => model.BookingUntil, validationMessage: null, htmlAttributes: new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group col-lg-6">
+                                @Html.LabelFor(expression: model => model.AssignRoomId, htmlAttributes: new { @class = "control-label" })
+                                @Html.DropDownListFor(x => x.AssignRoomId, @Model.ListofRooms, htmlAttributes: new { @class = "form-control", id = "ddAssignRoom" })
+                                @Html.ValidationMessageFor(expression: model => model.AssignRoomId, validationMessage: null, htmlAttributes: new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group col-lg-6">
+                                @Html.LabelFor(expression: model => model.NumberOfMembers, htmlAttributes: new { @class = "control-label" })
+                                @Html.TextBoxFor(expression: model => model.NumberOfMembers, htmlAttributes: new { @class = "form-control", @id = "txtNumberOfMembers" })
+                                @Html.ValidationMessageFor(expression: model => model.NumberOfMembers, validationMessage: null, htmlAttributes: new { @class = "text-danger" })
+                            </div >
+                            <div class="form-group col-lg-6">
+                                
+                            </div>
+                        </div>
+                        
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="btnSave" type="button" class="btn btn-success">Save</button> &nbsp;
+                <button type="button" data-dismiss="modal" class="btn btn-danger">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="margin-top: 70px">
+</div>
+<div id="divBookingHistroy"></div>
+
